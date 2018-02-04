@@ -154,8 +154,6 @@ While running the model training a plot of the train and validation accuracy was
 
 ![Accuracy plot][image6]
 
-Since the model was interrupted the total number of epochs of the x-axis is the correct number.
-
 ## Neural network training
 
 The neural network was trained using the Adam optimizer with cross entropy as loss function. Learning rate started with 0.0005 with an exponential decay, batchsize was 128. For image augmentation rotation, shift and zoom was used. Only one transformation was done since this gave the best result.
