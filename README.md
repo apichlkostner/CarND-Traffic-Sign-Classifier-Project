@@ -17,18 +17,25 @@ The site of the original challenge is http://benchmark.ini.rub.de/?section=gtsrb
 [image4]: ./docu-images/preprocessed_samples.png "Preprocessed samples"
 [image5]: ./docu-images/augmented_samples.png "Augmented samples"
 [image6]: ./docu-images/accuracy_plot.png "Accuracy plot"
+[image7]: ./docu-images/new_images.png "New images"
+[image8]: ./docu-images/new_images_preprocessed.png "New images preprocessed"
+[image9]: ./docu-images/featuremap_5.png "Feature map 1"
+[image10]: ./docu-images/featuremap_6.png "Feature map 2"
+[image11]: ./docu-images/featuremap_layer2.png "Features layer 2"
+
 
 # Summary
 
 The following steps were done:
 
 * Data Set Analysis: calulating some simple statistics of the data set with Python, NumPy and Pandas
-* Exploratory Visualization: plotting some randomsamples of the images, plotting one sample of every type of traffic sign, plotting a histogram of the data
-* Preprocessing: the images are preprocessed using NumPy and OpenCV
-* Model Architecture: After a first try with the original LeNet and an improved version with dropout regularization and more layers an architecture from a paper which was created during and after the original challenge was reprogrammed in Tensorflow and used for further analysis [1].
-* Model Training: the model was trained using 
-* Solution Approach: 
+* Exploratory Visualization: plotting some random samples of the images, plotting one sample of every type of traffic sign, plotting a histogram of the data
+* Preprocessing: the images are preprocessed using OpenCV
+* Model Architecture: After a first try with the original LeNet and an improved version with dropout regularization and more layers, an architecture from a paper which was created during and after the original challenge was reprogrammed in Tensorflow and used for further analysis [1].
+* Model Training: the model was trained using Adam optimizer with cross entropy as loss function
+* Solution Approach: Two stage convolutional neural network
 * Aquiring new images and test the model
+* Visualization of the features detected by the two network layer
 
 # Data Set Analysis
 
@@ -78,9 +85,11 @@ But in some images there are already very bright regions (sky) and dark regions 
 ### Preprocessing shown in examples
 
 Some sample images before the preprocessing step.
+
 ![Traffic signs before preprocessing][image3]
 
 And after preprocessing:
+
 ![Traffic signs after preprocessing][image4]
 
 ## Image augmentation
@@ -141,90 +150,80 @@ Since larger neural networks have the tendency to overfit the training data Drop
 
 The size of the network was taken from [1] where it gave the best results.
 
-While running the model training a plot of the train and validation accuracy was done. Using the plot the parameters were optimized to have neither an over- nor underfitted model. For the best result the training accuracy was 1.0 and the validation accuracy was 0.988. Trying to increade droput rate or image augmentation gave for both accuracies worse results.
+While running the model training a plot of the train and validation accuracy was done. Using the plot the parameters were optimized to have neither an over- nor underfitted model. For the best result the training accuracy was 1.0 and the validation accuracy was 0.991. Trying to increade droput rate or image augmentation gave for both accuracies worse results.
 
 ![Accuracy plot][image6]
 
 Since the model was interrupted the total number of epochs of the x-axis is the correct number.
 
-In a former model a stable validation accuracy of 0.99 was achieved but it's currently not reproducable.
-
 ## Neural network training
 
-The neural network was trained using the Adam optimizer with cross entropy as loss function. Learning rate started with 0.0005 with an exponential decay, batchsize was 128.
+The neural network was trained using the Adam optimizer with cross entropy as loss function. Learning rate started with 0.0005 with an exponential decay, batchsize was 128. For image augmentation rotation, shift and zoom was used. Only one transformation was done since this gave the best result.
 
-The last training uses about 400 epochs.
+The last training had the best model after 129 epochs.
 
 ## Results
 
 The final model results were:
 * training set accuracy of 1.0
-* validation set accuracy of 0.988
-* test set accuracy of ?
+* validation set accuracy of 0.991
+* test set accuracy of 0.979
 
 # Test model on new images
 
+The following additional traffic signs were used for testing the model
 
+![New images][image7]
+
+After preprocessing:
+
+![New images after preprocessing][image8]
+
+Since the new images are of relatively high quality there were no problems for the model to classify correctly.
+
+Here are the results of the prediction:
+
+'Keep right' 'No passing' 'Road work' 'Speed limit (30km/h)' 'No entry'
+ 'No vehicles' 'No vehicles' 'Traffic signals' 'No vehicles'
+ 'Turn right ahead' 'Speed limit (30km/h)'
+
+| Image			        |     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Keep right      		| Keep right   									| 
+| Road work     			| Road work 										|
+| Speed limit (30km/h)					| Speed limit (30km/h)											|
+| No entry	      		| No entry					 				|
+| No vehicles			| No vehicles      							|
+| No vehicles			| No vehicles      							|
+| Traffic signals			| Traffic signals      							|
+| No vehicles			| No vehicles      							|
+| Turn right ahead			| Turn right ahead      							|
+| Speed limit (30km/h)			| Speed limit (30km/h)      							|
+
+The accuracy is 1.0 which is comparable to the test set accuracy of 0.98.
+
+For all traffic signs the probability for the predicted class is 1.0. Even for the worst image the second highest probability is 0.000015.
+
+# Visualizing the Neural Network
+
+The features detected by the first two layers are shown in the next images.
+
+First there are two visualizations of the features detected by the first layer of the network with first an triangular sign and second with a round sign.
+
+![New images][image9]
+
+![New images][image10]
+
+The shapes of the sign can be clearly seen in the two images.
+
+The next image shows the output of the second layer which weight the different features from the first layer.
+
+![New images][image11]
+
+The result can not be interpreted as easy as the output from the first layer.
 
 # References
 
 [1](http://yann.lecun.com/exdb/publis/pdf/sermanet-ijcnn-11.pdf) Pierre Sermanet,Yann LeCun: "Traffic Sign Recognition with Multi-Scale Convolutional Networks", 2011 
 
 [2](https://docs.opencv.org/3.1.0/d5/daf/tutorial_py_histogram_equalization.html) Tutorial py histogram equalization
-
-## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
-
----
----
----
----
-### Writeup / README
-
-
-
-### Test a Model on New Images
-
-#### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
-
-Here are five German traffic signs that I found on the web:
-
-
-The first image might be difficult to classify because ...
-
-#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
-
-Here are the results of the prediction:
-
-| Image			        |     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
-
-
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
-
-#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
-
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
-
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
-
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
-
-
-For the second image ... 
-
-### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-#### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
-
-
