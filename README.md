@@ -120,26 +120,42 @@ Improved versions with more and larger layers gave better results but were slow 
 
 Since the paper described a succesfull architecture with a relatively small network it was tried to reproduce it using Tensorflow.
 
-The network uses two stages with convolution and max pooling followed by two fully connected layers. To allow the fully connected layers to use low and high level features the output of stage two contains the the output of layer 2 merged with the output of layer 1 (with an additional max pooling).
+The network uses three stages with convolution and max pooling followed by three fully connected layers. The first two stages use 3x3 and 5x5 convolutions which are concatenated for the next stage.
 
 My final model consisted of the following layers:
 
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
+| Layer         		|     Description	        					| Parallel layer | Descrioption |
+|:---------------------:|:---------------------------------------------:|:--------------:|:------------:|
 | Input         		| 32x32x1 grayscale image   					| 
-| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x108 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 14x14x64 				|
-| Dropout               | keep probability 0.65                          |
-| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x200  |
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 5x5x200   				|
-| Dropout               | keep probability 0.65                          |
-| Max pooling of layer 1| 2x2 stride,  outputs 7x7x108                  |
-| Flatten               | flatten of layer 2 and layer 1 with max pooling, outputs 10292x1|
+| Convolution 5x5     	| 1x1 stride, same padding, outputs 32x32x50 	| Convolution 3x3	    | 1x1 stride, same padding, outputs 32x32x50  |
+| ELU					|												|ELU				
+|  Dropout              | keep probability 0.65                         | Droput | |
+| Concatenate the parallel layers |||
+| Convolution 5x5     	| 2x2 stride, same padding, outputs 16x16x70 	| Convolution 3x3	    | 2x2 stride, same padding, outputs 16x16x70  |
+| ELU					|												|ELU				
+|  Dropout              | keep probability 0.65                         | Droput | |
+| Concatenate the parallel layers |||
+| Convolution 5x5     	| 2x2 stride, valid padding, outputs 4x4x100 	| Convolution 3x3	    | 2x2 stride, valid padding, outputs 6x6x100  |
+| ELU					|												|ELU				
+|  Dropout              | keep probability 0.65                         | Droput | |
+| Concatenate the parallel layers |||
+| Flatten               | 
+| Concatenate ||||
 | Fully connected		| 100 nodes         							|
+| Batch normalization |
+| Elu |
 | Dropout               | keep probability 0.65                          |
-| Fully connected		| 42 nodes         						    	|
+| Batch normalization |
+| Fully connected		| 50 nodes         							|
+| Batch normalization |
+| Elu |
+| Dropout               | keep probability 0.65                          |
+| Batch normalization |
+| Fully connected		| 43 nodes         							|
+| Batch normalization |
+| Elu |
+| Dropout               | keep probability 0.65                          |
+| Batch normalization |
 | Softmax				|           									|
 
 ## Model Optimization
@@ -150,7 +166,7 @@ Since larger neural networks have the tendency to overfit the training data Drop
 
 The size of the network was taken from [1] where it gave the best results.
 
-While running the model training a plot of the train and validation accuracy was done. Using the plot the parameters were optimized to have neither an over- nor underfitted model. For the best result the training accuracy was 1.0 and the validation accuracy was 0.991. Trying to increade droput rate or image augmentation gave for both accuracies worse results.
+While running the model training a plot of the train and validation accuracy was done. Using the plot the parameters were optimized to have neither an over- nor underfitted model. For the best result the training accuracy was 1.0 and the validation accuracy was 0.995. Trying to increade droput rate or image augmentation gave for both accuracies worse results.
 
 ![Accuracy plot][image6]
 
@@ -164,8 +180,8 @@ The last training had the best model after 129 epochs.
 
 The final model results were:
 * training set accuracy of 1.0
-* validation set accuracy of 0.991
-* test set accuracy of 0.979
+* validation set accuracy of 0.995
+* test set accuracy of 0.985
 
 # Test model on new images
 
@@ -206,19 +222,16 @@ For all traffic signs the probability for the predicted class is 1.0. Even for t
 
 The features detected by the first two layers are shown in the next images.
 
-First there are two visualizations of the features detected by the first layer of the network with first an triangular sign and second with a round sign.
+First there is a visualization of the features detected by the first layer of the network with a round sign.
 
 ![New images][image9]
 
-![New images][image10]
-
-The shapes of the sign can be clearly seen in the two images.
+The shapes of the sign can be clearly seen in the image.
 
 The next image shows the output of the second layer which weight the different features from the first layer.
 
 ![New images][image11]
 
-The result can not be interpreted as easy as the output from the first layer.
 
 # References
 
